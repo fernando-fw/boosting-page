@@ -3,275 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>R6 Boost · @fsharkf</title>
-  <style>
-    :root {
-      --bg: #0a0b10; --card: #13151d; --accent: #00d4ff; --text: #e2e8f0;
-      --green: #00ff88; --warn: #ff4d4d; --border: #2a2d3a; --hover: #1a1d29;
-      --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
-    .container { max-width: 850px; margin: auto; }
-    
-    /* HEADER & STATUS */
-    .header { text-align: center; margin-bottom: 30px; }
-    h1 { font-size: 2rem; color: var(--accent); margin-bottom: 5px; letter-spacing: -0.5px; }
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; background: #0f140f; border: 1px solid var(--green); color: var(--green); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; margin: 10px 0; }
-    .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    
-    /* CURRENCY SWITCH */
-    .currency-switch { display: flex; gap: 8px; justify-content: center; margin: 15px 0; }
-    .currency-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; cursor: pointer; border-radius: 8px; font-weight: 500; transition: 0.2s; }
-    .currency-btn.active, .currency-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
-    
-    /* STATS BAR */
-    .stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--border); }
-    .stat-item { text-align: center; font-size: 0.9rem; }
-    .stat-item strong { display: block; color: var(--accent); font-size: 1.1rem; }
-    
-    /* SERVICES GRID */
-    .service-grid { display: grid; gap: 10px; margin: 20px 0; }
-    .service-card { background: var(--card); padding: 14px; border-radius: 8px; border-left: 3px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; transition: 0.2s; }
-    .service-card:hover { transform: translateY(-2px); background: var(--hover); }
-    .service-card.featured { border-left-color: var(--green); box-shadow: 0 4px 12px rgba(0,255,136,0.1); }
-    .price { font-size: 1.1em; font-weight: bold; color: var(--green); font-family: monospace; }
-    .badge { background: var(--border); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-left: 6px; opacity: 0.8; }
-    .btn-order { background: var(--accent); color: #000; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-    .btn-order:hover { opacity: 0.9; transform: translateY(-1px); }
-    
-    /* MMR NOTE */
-    .mmr-note { background: #1a1a24; border-left: 3px solid #ffaa00; padding: 12px; margin: 15px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; }
-    
-    /* FAQ ACCORDION */
-    details { background: var(--card); border-radius: 8px; margin-bottom: 8px; overflow: hidden; border: 1px solid var(--border); }
-    summary { padding: 12px 15px; cursor: pointer; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
-    summary::after { content: '+'; font-size: 1.2rem; transition: 0.2s; }    details[open] summary::after { transform: rotate(45deg); }
-    details p { padding: 0 15px 12px; font-size: 0.95em; opacity: 0.9; }
-    
-    /* ORDER FORM */
-    .section { background: var(--card); padding: 20px; margin: 25px 0; border-radius: 10px; border: 1px solid var(--border); }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.95rem; }
-    input, select { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-family: inherit; transition: 0.2s; }
-    input:focus, select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(0,212,255,0.2); }
-    input::placeholder { color: #666; }
-    
-    /* CLEAN COUPON INPUT */
-    .coupon-wrap { display: flex; gap: 8px; }
-    .coupon-input { background: transparent !important; border: 1px solid var(--border); }
-    .coupon-input::placeholder { color: #888; font-style: italic; }
-    .discount-msg { margin-top: 6px; font-size: 0.9em; min-height: 20px; }
-    .price-preview { display: flex; justify-content: space-between; margin-top: 10px; padding: 10px; background: #0f1118; border-radius: 6px; font-size: 0.95em; }
-    
-    /* CONTACTS */
-    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-    .contact-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; transition: 0.2s; font-weight: 500; }
-    .contact-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
-    
-    /* FOOTER & DISCLAIMER */
-    .disclaimer { background: #1a0f0f; border: 1px solid #3a1515; color: #ff8888; padding: 12px; margin-top: 25px; border-radius: 8px; font-size: 0.9em; text-align: center; }
-    footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 0.85em; padding-bottom: 20px; }
-    
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .service-card { flex-direction: column; align-items: flex-start; }
-      .service-card > div:last-child { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-      .btn-order { flex: 1; }
-    }
-  </style>
+  <meta name="description" content="R6 Siege Rank Boosting Premium hasta Esmeralda. Pagos seguros, reseñas reales y entrega garantizada.">
+  <title>R6 Boost Premium · @fsharkf</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- 🔧 ZONA DE CONFIGURACIÓN MANUAL (Edita solo aquí para cambios rápidos) -->
-<script>
-  const CONFIG = {
-    status: 'available', // 'available', 'busy', 'offline'
-    statusLabels: { available: '🟢 Disponible ahora', busy: '🟡 En cola (respondo en ~2h)', offline: '🔴 Offline' },
-    codes: { 'OSCAR': 0.20, 'DOMINICAN': 0.15 }, // Formato: 'CODIGO': 0.XX
-    contacts: {
-      whatsapp: '526123038037',
-      discord: 'fernando_tv',
-      tiktok: 'https://www.tiktok.com/@fsharkf',
-      tracker: 'https://r6.tracker.network/r6siege/profile/ubi/mrcameron63ubi/overview' // ✅ TU LINK ACTUALIZADO
-    }
-  };</script>
-
-<div class="container">
-  <div class="header">
-    <h1>R6 BOOST · @fsharkf</h1>
-    <p style="opacity:0.8; margin-bottom:10px;">Rango máximo disponible: <strong style="color:var(--green)">ESMERALDA</strong></p>
-    <div id="status-badge" class="status-badge"></div>
+  <div class="container">
     
-    <div class="currency-switch">
-      <button class="currency-btn active" onclick="switchCurrency('MXN')">🇲🇽 MXN</button>
-      <button class="currency-btn" onclick="switchCurrency('USD')">🇺🇸 USD</button>
-      <button class="currency-btn" onclick="switchCurrency('EUR')">🇪🇺 EUR</button>
-    </div>
-    <small style="opacity:0.6">Tipo de cambio aprox: $20 MXN/USD · €1 ≈ $1.08 USD</small>
-  </div>
-
-  <div class="stats">
-    <div class="stat-item"><strong>150+</strong> Cuentas Boosteadas</div>
-    <div class="stat-item"><strong>⭐ 4.9/5</strong> Valoración</div>
-    <div class="stat-item"><strong>🔒 100%</strong> Seguro & Stealth</div>
-    <div class="stat-item"><strong>⚡ PC Only</strong> Optimizado</div>
-  </div>
-
-  <h2>⬡ Servicios de Boosting</h2>
-  <div class="service-grid">
-    <h3 style="grid-column:1/-1; margin-bottom:5px;">📦 Cuenta Nueva (Sin Rango)</h3>
-    <div class="service-card"><div>Unranked → Cobre <span class="badge">~1 día</span></div><div><span class="price" data-mxn="100" data-usd="5" data-eur="4.50">$100 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Cobre')">Ordenar</button></div>
-    <div class="service-card"><div>Unranked → Bronce <span class="badge">~1–2 días</span></div><div><span class="price" data-mxn="180" data-usd="9" data-eur="8">$180 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Bronce')">Ordenar</button></div>
-    <div class="service-card"><div>Unranked → Plata <span class="badge">~2–3 días</span></div><div><span class="price" data-mxn="290" data-usd="14" data-eur="13">$290 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Plata')">Ordenar</button></div>
-    <div class="service-card"><div>Unranked → Oro <span class="badge">~3–4 días</span></div><div><span class="price" data-mxn="420" data-usd="21" data-eur="19">$420 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Oro')">Ordenar</button></div>
-    <div class="service-card"><div>Unranked → Platino <span class="badge">~4–5 días</span></div><div><span class="price" data-mxn="550" data-usd="27" data-eur="25">$550 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Platino')">Ordenar</button></div>
-    <div class="service-card featured"><div>⭐ Unranked → Esmeralda <span class="badge">~5–7 días</span></div><div><span class="price" data-mxn="800" data-usd="40" data-eur="37">$800 MXN</span></div><button class="btn-order" onclick="selectService('Unranked → Esmeralda')">Ordenar Ahora</button></div>
-
-    <h3 style="grid-column:1/-1; margin-bottom:5px; margin-top:10px;">📈 Desde Rango Existente</h3>
-    <div class="service-card"><div>Cobre → Plata <span class="badge">~1–2 días</span></div><div><span class="price" data-mxn="180" data-usd="9" data-eur="8">$180 MXN</span></div><button class="btn-order" onclick="selectService('Cobre → Plata')">Ordenar</button></div>
-    <div class="service-card"><div>Cobre → Oro <span class="badge">~2–3 días</span></div><div><span class="price" data-mxn="300" data-usd="15" data-eur="14">$300 MXN</span></div><button class="btn-order" onclick="selectService('Cobre → Oro')">Ordenar</button></div>
-    <div class="service-card"><div>Cobre → Platino <span class="badge">~3–4 días</span></div><div><span class="price" data-mxn="420" data-usd="21" data-eur="19">$420 MXN</span></div><button class="btn-order" onclick="selectService('Cobre → Platino')">Ordenar</button></div>
-    <div class="service-card"><div>Cobre → Esmeralda <span class="badge">~4–6 días</span></div><div><span class="price" data-mxn="620" data-usd="31" data-eur="29">$620 MXN</span></div><button class="btn-order" onclick="selectService('Cobre → Esmeralda')">Ordenar</button></div>
-    <div class="service-card"><div>Bronce → Oro <span class="badge">~2 días</span></div><div><span class="price" data-mxn="230" data-usd="11" data-eur="10">$230 MXN</span></div><button class="btn-order" onclick="selectService('Bronce → Oro')">Ordenar</button></div>
-    <div class="service-card"><div>Bronce → Platino <span class="badge">~3 días</span></div><div><span class="price" data-mxn="340" data-usd="17" data-eur="16">$340 MXN</span></div><button class="btn-order" onclick="selectService('Bronce → Platino')">Ordenar</button></div>
-    <div class="service-card"><div>Bronce → Esmeralda <span class="badge">Fast ~4–5 días</span></div><div><span class="price" data-mxn="510" data-usd="25" data-eur="23">$510 MXN</span></div><button class="btn-order" onclick="selectService('Bronce → Esmeralda')">Ordenar</button></div>
-    <div class="service-card"><div>Plata → Platino <span class="badge">~2–3 días</span></div><div><span class="price" data-mxn="250" data-usd="12" data-eur="11">$250 MXN</span></div><button class="btn-order" onclick="selectService('Plata → Platino')">Ordenar</button></div>
-    <div class="service-card"><div>Plata → Esmeralda <span class="badge">~3–4 días</span></div><div><span class="price" data-mxn="400" data-usd="20" data-eur="18">$400 MXN</span></div><button class="btn-order" onclick="selectService('Plata → Esmeralda')">Ordenar</button></div>
-    <div class="service-card"><div>Oro → Esmeralda <span class="badge">Fast ~2–3 días</span></div><div><span class="price" data-mxn="280" data-usd="14" data-eur="13">$280 MXN</span></div><button class="btn-order" onclick="selectService('Oro → Esmeralda')">Ordenar</button></div>
-    <div class="service-card"><div>Platino → Esmeralda <span class="badge">Fastest ~1–2 días</span></div><div><span class="price" data-mxn="175" data-usd="8" data-eur="7.50">$175 MXN</span></div><button class="btn-order" onclick="selectService('Platino → Esmeralda')">Ordenar</button></div>
-  </div>
-
-  <div class="mmr-note">
-    ⚠️ <strong>Tiempos & MMR:</strong> Los plazos son estimados. El tiempo de entrega <strong>se ve afectado directamente por tu MMR</strong> (puntos ocultos de ranked). Cuentas con MMR bajo, mala racha o muchas derrotas recientes pueden requerir más partidas y agregar 1-2 días extra al servicio.
-  </div>
-  <h2 style="margin-top:25px;">❓ Preguntas Frecuentes</h2>
-  <details><summary>💳 ¿Cómo es el pago?</summary><p>50% al inicio para comenzar, 50% al terminar. Acepto PayPal, transferencia o crypto. Si pagas el 100% por adelantado, aplico un pequeño bonus de prioridad.</p></details>
-  <details><summary>🎮 ¿Cómo funciona la modalidad?</summary><p>Solo Piloted: yo entro a tu cuenta y juego. Puedes solicitar un stream privado en vivo si quieres ver el progreso en tiempo real.</p></details>
-  <details><summary>🔒 ¿Es seguro?</summary><p>Sí. No cambio contraseña, email ni datos personales. Acceso temporal únicamente para jugar ranked. Uso de VPN opcional si lo prefieres.</p></details>
-  <details><summary>🏷️ ¿Los cupones son públicos?</summary><p>No. Los códigos solo se entregan por DM o en promociones activas. El sistema valida automáticamente si el código es válido y aplica el descuento al instante.</p></details>
-
-  <div class="section" id="order-form">
-    <h2>📝 Completar Orden</h2>
-    <div class="form-group"><label>Nombre / Nickname</label><input type="text" placeholder="Tu nombre o alias"></div>
-    <div class="form-group"><label>Correo electrónico</label><input type="email" placeholder="Para confirmación y updates"></div>
-    <div class="form-group"><label>🆔 Username de Ubisoft</label><input type="text" placeholder="Perfil R6 → nombre superior. NO contraseña."></div>
-    <div class="form-group">
-      <label>🖥️ Plataforma</label>
-      <select>
-        <option>PC (Steam)</option>
-        <option>PC (Epic Games)</option>
-        <option>PC (Ubisoft Connect)</option>
-        <option>PC (Xbox App)</option>
-      </select>
-      <small style="color:#888; display:block; margin-top:4px;">⚠️ Solo servicios para PC. No se aceptan consolas.</small>
-    </div>
-    <div class="form-group"><label>Servicio solicitado</label><input type="text" id="selected-service" placeholder="Selecciona uno arriba ↑" readonly></div>
-    
-    <div class="form-group">
-      <label>🏷️ Código de descuento</label>
-      <div class="coupon-wrap">
-        <input type="text" id="discount-code" class="coupon-input" placeholder="Código">
-        <button class="btn-order" onclick="applyDiscount()">Aplicar</button>
+    <header>
+      <div class="status-badge">
+        <span class="status-dot"></span> BOOSTER ONLINE · DISPONIBLE
       </div>
-      <p id="discount-msg" class="discount-msg"></p>
+      <h1 class="logo">R6 <span>Siege</span> Boosting</h1>
+      <p class="subtitle">Sube de rango con jugadores profesionales hasta Esmeralda</p>
+    </header>
+
+    <div class="controls-bar">
+      <div class="currency-toggle">
+        <button id="btn-mxn" class="active" onclick="setCurrency('MXN')">MXN ($)</button>
+        <button id="btn-usd" onclick="setCurrency('USD')">USD ($)</button>
+      </div>
     </div>
 
-    <div class="price-preview">
-      <span id="base-price-label">Total estimado:</span>
-      <span id="total-display" style="color:var(--green); font-weight:bold;">Selecciona servicio</span>
-    </div>
+    <div class="main-grid">
+      
+      <div>
+        <h3 class="section-title">Selecciona tu servicio de Rank</h3>
+        <div class="catalog-wrapper" id="catalog-container">
+          </div>
+        
+        <div class="faq-section">
+          <h3 class="section-title">Preguntas Frecuentes</h3>
+          <details>
+            <summary>¿Cómo funciona el proceso de boosting?</summary>
+            <div class="faq-content">Una vez verificado tu pago, nos pondremos en contacto contigo de inmediato vía WhatsApp o Correo para coordinar el acceso seguro a tu cuenta o agruparnos en tu equipo para iniciar las partidas de inmediato.</div>
+          </details>
+          <details>
+            <summary>¿Mi cuenta corre riesgo de ban?</summary>
+            <div class="faq-content">No. No utilizamos ningún tipo de software ilícito, trampas ni exploits. Todo el boosting se realiza mediante habilidad legítima de jugadores de nivel Diamante/Campeón usando redes VPN de alta seguridad para proteger tu geolocalización.</div>
+          </details>
+        </div>
 
-    <div class="form-group" style="margin-top:15px;">
-      <label>💳 Método de pago</label>
-      <select><option>PayPal (Seguro · Internacional)</option><option>Transferencia / Crypto</option></select>
-      <small style="color:#888">✅ Recibirás link de pago por correo. Paga solo el 50% ahora.</small>
+        <div class="contact-card" style="margin-top: 25px;">
+          <h3 class="section-title">Soporte Técnico / Presupuestos</h3>
+          <form id="contact-form" onsubmit="handleContactSubmit(event)" style="margin-top: 15px;">
+            <input type="text" id="c-name" placeholder="Tu Nombre / GamerTag" required style="margin-bottom: 8px;">
+            <textarea id="c-msg" rows="3" placeholder="¿Tienes alguna duda con los rangos o necesitas un presupuesto personalizado?" required style="margin-bottom: 8px; resize: none;"></textarea>
+            <button type="submit" id="btn-submit-contact" class="btn-submit" style="padding: 8px; font-size: 12px;">Enviar Mensaje a WhatsApp</button>
+            <div id="contact-status-box" class="status-msg"></div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="sticky-sidebar">
+        
+        <div class="checkout-card">
+          <h3>Formulario de Pedido</h3>
+          <form id="order-form" onsubmit="executeOrderSubmit(event)">
+            
+            <label for="f-service">Servicio Seleccionado</label>
+            <select id="f-service" onchange="syncSelectionFromDropdown(this.value)" required>
+              <option value="" disabled selected>-- Elige un rango en el catálogo --</option>
+            </select>
+
+            <label for="f-name">Nombre Completo <span style="color:var(--accent)">*</span></label>
+            <input type="text" id="f-name" placeholder="Ej. Juan Pérez" required>
+
+            <label for="f-contact">WhatsApp / Discord <span style="color:var(--accent)">*</span></label>
+            <input type="text" id="f-contact" placeholder="Ej. +52 5512345678" required>
+
+            <label for="f-email">Correo Electrónico <span style="color:var(--accent)">*</span></label>
+            <input type="email" id="f-email" placeholder="tu@correo.com" required>
+
+            <label for="f-coupon">¿Tienes un cupón de Descuento?</label>
+            <div class="coupon-box">
+              <input type="text" id="f-coupon" placeholder="Ej. fsharkf">
+              <button type="button" class="btn-apply" onclick="validateCouponCode()">Aplicar</button>
+            </div>
+
+            <div class="summary-box">
+              <div class="summary-row">
+                <span>Precio Base:</span>
+                <span id="summary-base">$0.00 MXN</span>
+              </div>
+              <div class="summary-row">
+                <span>Descuento aplicado:</span>
+                <span id="summary-discount" style="color: var(--emerald)">0%</span>
+              </div>
+              <div class="summary-row total">
+                <span>Total Final:</span>
+                <span id="summary-total" class="final-price">$0.00 MXN</span>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-submit-order" class="btn-submit">Confirmar Orden de Servicio</button>
+            <div id="status-message-box" class="status-msg"></div>
+          </form>
+        </div>
+
+        <div class="reviews-card">
+          <div class="reviews-header">
+            <h3 style="font-family:'Rajdhani', sans-serif; text-transform:uppercase; font-size:15px; letter-spacing:1px; color:var(--accent)">Reseñas de la Comunidad</h3>
+            <div class="rating-average">
+              <span class="rating-num">4.9</span>
+              <span class="rating-stars">★★★★★</span>
+            </div>
+          </div>
+          
+          <div class="review-list" id="review-container">
+            </div>
+
+          <div class="add-review-form">
+            <h4 style="font-size:12px; font-family:'Rajdhani', sans-serif; text-transform:uppercase; color:var(--text-dim)">Dejar una Valoración</h4>
+            <div class="star-rating-select" id="star-selector">
+              <label onclick="setStarRating(1)">★</label>
+              <label onclick="setStarRating(2)">★</label>
+              <label onclick="setStarRating(3)">★</label>
+              <label onclick="setStarRating(4)">★</label>
+              <label onclick="setStarRating(5)" class="selected">★</label>
+            </div>
+            <input type="text" id="r-name" placeholder="Tu GamerTag" style="padding: 8px; margin-bottom:6px; font-size:12px;">
+            <textarea id="r-text" rows="2" placeholder="Cuéntanos tu experiencia con el boost..." style="padding: 8px; font-size:12px; resize: none;"></textarea>
+            <button type="button" class="btn-submit" style="padding:6px; font-size:11px; margin-top:6px;" onclick="addNewUserReview()">Publicar Reseña</button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
-    <button class="btn-order" style="width:100%; padding:12px; font-size:1.1em; margin-top:10px;" onclick="submitOrder()">CONFIRMAR ORDEN</button>
   </div>
 
-  <div class="section">
-    <h2>📞 Contacto Directo</h2>
-    <div class="contact-grid">
-      <a class="contact-btn" href="https://wa.me/526123038037" target="_blank">📱 WhatsApp</a>      <a class="contact-btn" href="https://discord.com/users/fernando_tv" target="_blank">💬 Discord</a>
-      <a class="contact-btn" href="https://www.tiktok.com/@fsharkf" target="_blank">🎵 TikTok</a>
-      <a class="contact-btn" href="https://r6.tracker.network/r6siege/profile/ubi/mrcameron63ubi/overview" target="_blank">📊 Tracker.gg</a>
-    </div>
-  </div>
-
-  <div class="disclaimer">
-    ⚠️ El boosting va en contra de los Términos de Servicio de Ubisoft. El cliente asume el riesgo. No me hago responsable de sanciones a la cuenta posteriores al servicio.
-  </div>
-  <footer>R6 BOOST · @fsharkf · Solo PC · 2024-2026</footer>
-</div>
-
-<script>
-  // 🔧 INIT STATUS
-  const badge = document.getElementById('status-badge');
-  badge.innerHTML = `<div class="status-dot"></div> ${CONFIG.statusLabels[CONFIG.status] || CONFIG.statusLabels.busy}`;
-
-  // 🔧 CURRENCY SYSTEM
-  let currentCurrency = 'MXN';
-  const symbols = { MXN: '$', USD: '$', EUR: '€' };
-  
-  function switchCurrency(curr) {
-    currentCurrency = curr;
-    document.querySelectorAll('.currency-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(curr)));
-    document.querySelectorAll('.price').forEach(el => {
-      const val = el.getAttribute(`data-${curr.toLowerCase()}`);
-      el.textContent = `${symbols[curr]}${val} ${curr}`;
-    });
-    updateTotalDisplay();
-  }
-
-  // 🔧 SERVICE SELECT & CALCULATOR
-  let selectedBasePrice = 0;
-  let currentDiscount = 0;
-
-  function selectService(name) {
-    document.getElementById('selected-service').value = name;
-    const card = event.target.closest('.service-card');
-    selectedBasePrice = parseFloat(card.querySelector('.price').getAttribute(`data-${currentCurrency.toLowerCase()}`));
-    updateTotalDisplay();
-    document.getElementById('order-form').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function updateTotalDisplay() {
-    const el = document.getElementById('total-display');
-    if (selectedBasePrice === 0) { el.textContent = 'Selecciona servicio'; return; }
-    const final = selectedBasePrice * (1 - currentDiscount);
-    el.textContent = `${symbols[currentCurrency]}${final.toFixed(2)} ${currentCurrency}`;
-    if (currentDiscount > 0) {
-      el.innerHTML += `<br><small style="opacity:0.7; color:#aaa;">${currentDiscount*100}% desc aplicado</small>`;    }
-  }
-
-  // 🔧 DISCOUNT LOGIC
-  function applyDiscount() {
-    const code = document.getElementById('discount-code').value.toUpperCase().trim();
-    const msg = document.getElementById('discount-msg');
-    if (CONFIG.codes[code]) {
-      currentDiscount = CONFIG.codes[code];
-      msg.textContent = `✅ Código válido: ${currentDiscount * 100}% de descuento`;
-      msg.style.color = 'var(--green)';
-      updateTotalDisplay();
-    } else {
-      currentDiscount = 0;
-      msg.textContent = '❌ Código inválido o expirado';
-      msg.style.color = 'var(--warn)';
-      updateTotalDisplay();
-    }
-  }
-
-  // 🔧 SUBMIT SIMULATION
-  function submitOrder() {
-    const svc = document.getElementById('selected-service').value;
-    if (!svc) return alert('⚠️ Selecciona un servicio primero desde la lista de arriba.');
-    alert(`✅ Orden de "${svc}" recibida. Te contactaré por correo/WhatsApp en menos de 1 hora para coordinar pago y acceso.`);
-  }
-
-  // INIT
-  switchCurrency('MXN');
-</script>
+  <script src="components.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
